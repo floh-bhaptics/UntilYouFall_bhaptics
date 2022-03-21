@@ -124,7 +124,7 @@ namespace TactsuitUntilYouFall
                         TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R", intensity);
                         if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R", intensity); }
                     }
-                    tactsuitVr.LOG("GetForceRating");
+                    // tactsuitVr.LOG("GetForceRating");
                     // tactsuitVr.LOG(__result.ToString());
                     
                 }
