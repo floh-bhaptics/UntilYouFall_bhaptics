@@ -119,14 +119,25 @@ namespace TactsuitUntilYouFall
                     {
                         TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_L", intensity);
                         if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_L", intensity); }
-                    } else
+                        if (__instance.armament.isHeldInTwoHands)
+                        {
+                            TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R", intensity * 0.5f);
+                            if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R", intensity * 0.5f); }
+                        }
+                    }
+                        else
                     {
                         TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R", intensity);
                         if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R", intensity); }
+                        if (__instance.armament.isHeldInTwoHands)
+                        {
+                            TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_L", intensity * 0.5f);
+                            if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_L", intensity * 0.5f); }
+                        }
                     }
                     // tactsuitVr.LOG("GetForceRating");
                     // tactsuitVr.LOG(__result.ToString());
-                    
+
                 }
             }
         }
@@ -214,12 +225,24 @@ namespace TactsuitUntilYouFall
                     TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_L");
                     TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockVest_L");
                     if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_L"); }
+                    if (blocker.armament.isHeldInTwoHands)
+                    {
+                        TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R", 0.5f);
+                        TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockVest_R", 0.5f);
+                        if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R", 0.5f); }
+                    }
                 }
                 else
                 {
                     TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R");
                     TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockVest_R");
                     if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R"); }
+                    if (blocker.armament.isHeldInTwoHands)
+                    {
+                        TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_L", 0.5f);
+                        TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockVest_L", 0.5f);
+                        if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_L", 0.5f); }
+                    }
                 }
 
             }
