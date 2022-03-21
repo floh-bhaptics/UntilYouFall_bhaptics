@@ -105,7 +105,7 @@ namespace TactsuitUntilYouFall
         }
 
 
-        [HarmonyPatch(typeof(MeleeWeapon), "GetForceRating")]
+        [HarmonyPatch(typeof(MeleeWeapon), "GetForceRating", new Type[] { typeof(SG.Claymore.HitSystem.HitData.HitQualityType) })]
         public class HitForce
         {
             [HarmonyPostfix]
@@ -124,7 +124,7 @@ namespace TactsuitUntilYouFall
                         TactsuitUntilYouFall.tactsuitVr.FileFeedback("Block_R", intensity);
                         if (handsConnected) { TactsuitUntilYouFall.tactsuitVr.FileFeedback("BlockHands_R", intensity); }
                     }
-                    // tactsuitVr.LOG("GetForceRating");
+                    tactsuitVr.LOG("GetForceRating");
                     // tactsuitVr.LOG(__result.ToString());
                     
                 }
