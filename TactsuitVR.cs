@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Bhaptics.Tact;
 using MelonLoader;
 using UnityEngine;
 
@@ -79,7 +78,7 @@ namespace TactsuitUntilYouFall
 
         public bool systemInitialized = false;
         //public MelonLoader.bHaptics hapticPlayer;
-        public HapticPlayer hapticPlayer;
+        //public HapticPlayer hapticPlayer;
 
         Dictionary<FeedbackType, Feedback> feedbackMap = new Dictionary<FeedbackType, Feedback>();
 
@@ -132,7 +131,7 @@ namespace TactsuitUntilYouFall
 
         void SimpleTactFileRegister(string key, string filename)
         {
-            hapticPlayer.RegisterTactFileStr(key, filename);
+            bHapticsLib.bHapticsManager.RegisterPatternFromJson(key, filename);
         }
 
         void TactFileRegister(string fullname, Feedback feedback)
@@ -145,7 +144,7 @@ namespace TactsuitUntilYouFall
 
                 string tactFileStr = File.ReadAllText(fullname);
 
-                hapticPlayer.RegisterTactFileStr(feedback.prefix, tactFileStr);
+                bHapticsLib.bHapticsManager.RegisterPatternFromJson(feedback.prefix, tactFileStr);
                 // hapticPlayer.RegisterTactFileStr(feedback.prefix + (feedbackMap[feedback.feedbackType].feedbackFileCount).ToString(), tactFileStr);
             }
         }
@@ -198,14 +197,11 @@ namespace TactsuitUntilYouFall
         {
             if (!systemInitialized)
             {
-                hapticPlayer = new Bhaptics.Tact.HapticPlayer("mod_untilyoufall", "mod_untilyoufall");
+                //hapticPlayer = new Bhaptics.Tact.HapticPlayer("mod_untilyoufall", "mod_untilyoufall");
 
-                if (hapticPlayer != null)
-                {
-                    RegisterFeedbackFiles();
-                    systemInitialized = true;
-                    LOG("Tactsuit system initialized.");
-                }
+                RegisterFeedbackFiles();
+                systemInitialized = true;
+                LOG("Tactsuit system initialized.");
             }
         }
 
@@ -214,7 +210,7 @@ namespace TactsuitUntilYouFall
             for (int i = 1; i <= feedbackFileCount; i++)
             {
                 string key = (reflected ? "Reflected_" : "") + prefix + i.ToString();
-                if (hapticPlayer.IsPlaying(key))
+                if (bHapticsLib.bHapticsManager.IsPlaying(key))
                 {
                     return true;
                 }
@@ -231,47 +227,44 @@ namespace TactsuitUntilYouFall
             if (intensityMultiplier < 0.001f)
                 return;
 
-            if (!systemInitialized || hapticPlayer == null)
+            if (!systemInitialized)
                 CreateSystem();
 
-            if (hapticPlayer != null)
+            if (feedbackMap.ContainsKey(effect))
             {
-                if (feedbackMap.ContainsKey(effect))
+                if (feedbackMap[effect].feedbackFileCount > 0)
                 {
-                    if (feedbackMap[effect].feedbackFileCount > 0)
+                    if (waitToPlay)
                     {
-                        if (waitToPlay)
+                        if (IsPlayingKeyAll(reflected, feedbackMap[effect].prefix, feedbackMap[effect].feedbackFileCount))
                         {
-                            if (IsPlayingKeyAll(reflected, feedbackMap[effect].prefix, feedbackMap[effect].feedbackFileCount))
-                            {
-                                return;
-                            }
+                            return;
                         }
-
-                        string key = (reflected ? "Reflected_" : "") + feedbackMap[effect].prefix + (RandomNumber.Between(1, feedbackMap[effect].feedbackFileCount)).ToString();
-
-                        if (locationHeight < -0.5f)
-                            locationHeight = -0.5f;
-                        else if (locationHeight > 0.5f)
-                            locationHeight = 0.5f;
-
-                        Bhaptics.Tact.RotationOption RotOption = new RotationOption(locationAngle, locationHeight);
-
-                        Bhaptics.Tact.ScaleOption scaleOption = new ScaleOption(intensityMultiplier, duration);
-
-                        
-                        hapticPlayer.SubmitRegisteredVestRotation(key, key, RotOption, scaleOption);
-                        LOG("===> Submitted Feedback: " + key + " Intensity: " + intensityMultiplier + " Height: " + locationHeight + " Angle: " + locationAngle);
                     }
+
+                    string key = (reflected ? "Reflected_" : "") + feedbackMap[effect].prefix + (RandomNumber.Between(1, feedbackMap[effect].feedbackFileCount)).ToString();
+
+                    if (locationHeight < -0.5f)
+                        locationHeight = -0.5f;
+                    else if (locationHeight > 0.5f)
+                        locationHeight = 0.5f;
+
+                    var RotOption = new bHapticsLib.RotationOption(locationAngle, locationHeight);
+
+                    var scaleOption = new bHapticsLib.ScaleOption(intensityMultiplier, duration);
+
+
+                    bHapticsLib.bHapticsManager.PlayRegistered(key, key, scaleOption, RotOption);
+                    LOG("===> Submitted Feedback: " + key + " Intensity: " + intensityMultiplier + " Height: " + locationHeight + " Angle: " + locationAngle);
                 }
             }
         }
         
         public void HeartBeat()
         {
-            string key_long = "HeartBeat";
-            Bhaptics.Tact.ScaleOption scaleOption = new ScaleOption(1.0f, 1.0f);
-            hapticPlayer.SubmitRegistered(key_long, scaleOption);
+            //string key_long = "HeartBeat";
+            //Bhaptics.Tact.ScaleOption scaleOption = new ScaleOption(1.0f, 1.0f);
+            bHapticsLib.bHapticsManager.PlayRegistered("HeartBeat");
         }
 
         public void ProvideHapticFeedback(float locationAngle, float locationHeight, FeedbackType effect, bool waitToPlay, float intensity, FeedbackType secondEffect, bool reflected, float duration = 1.0f)
@@ -299,43 +292,38 @@ namespace TactsuitUntilYouFall
                 if (suitDisabled)
                     return;
 
-                if (!systemInitialized || hapticPlayer == null)
+                if (!systemInitialized)
                     CreateSystem();
 
-                if (hapticPlayer != null)
+                if (feedbackMap.ContainsKey(effect))
                 {
-                    if (feedbackMap.ContainsKey(effect))
+                    if (feedbackMap[effect].feedbackFileCount > 0)
                     {
-                        if (feedbackMap[effect].feedbackFileCount > 0)
-                        {
-                            string key = feedbackMap[effect].prefix + (RandomNumber.Between(1, feedbackMap[effect].feedbackFileCount)).ToString();
-                            hapticPlayer.SubmitRegistered(key);
-                        }
-
+                        string key = feedbackMap[effect].prefix + (RandomNumber.Between(1, feedbackMap[effect].feedbackFileCount)).ToString();
+                        bHapticsLib.bHapticsManager.PlayRegistered(key);
                     }
+
                 }
             }
         }
 
         public void FileFeedback(String key, float intensity = 1.0f, float duration = 1.0f)
         {
-            Bhaptics.Tact.ScaleOption scaleOption = new ScaleOption(intensity, duration);
-            hapticPlayer.SubmitRegistered(key, scaleOption);
+            bHapticsLib.ScaleOption scaleOption = new bHapticsLib.ScaleOption(intensity, duration);
+            bHapticsLib.RotationOption rotationOption = new bHapticsLib.RotationOption(0.0f, 0.0f);
+            bHapticsLib.bHapticsManager.PlayRegistered(key, key, scaleOption, rotationOption);
         }
 
         public void StopHapticFeedback(FeedbackType effect)
         {
-            if (hapticPlayer != null)
+            if (feedbackMap.ContainsKey(effect))
             {
-                if (feedbackMap.ContainsKey(effect))
+                if (feedbackMap[effect].feedbackFileCount > 0)
                 {
-                    if (feedbackMap[effect].feedbackFileCount > 0)
+                    for (int i = 1; i <= feedbackMap[effect].feedbackFileCount; i++)
                     {
-                        for (int i = 1; i <= feedbackMap[effect].feedbackFileCount; i++)
-                        {
-                            string key = feedbackMap[effect].prefix + i.ToString();
-                            hapticPlayer.TurnOff(key);
-                        }
+                        string key = feedbackMap[effect].prefix + i.ToString();
+                        bHapticsLib.bHapticsManager.StopPlaying(key);
                     }
                 }
             }
@@ -345,7 +333,7 @@ namespace TactsuitUntilYouFall
         {
             for (int i = 1; i <= feedbackMap[effect].feedbackFileCount; i++)
             {
-                hapticPlayer.TurnOff(feedbackMap[effect].prefix + i.ToString());
+                bHapticsLib.bHapticsManager.StopPlaying(feedbackMap[effect].prefix + i.ToString());
             }
         }
 

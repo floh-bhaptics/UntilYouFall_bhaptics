@@ -3,15 +3,15 @@ using MelonLoader;
 using HarmonyLib;
 using System.Threading;
 
-using SG.Claymore.Movement.Dash;
-using SG.Claymore.Combat.Blocking;
-using SG.Claymore.Interaction;
-using SG.Claymore.Armaments;
-using SG.Claymore.Armaments.Abilities;
-using SG.Claymore.Player;
-using SG.Claymore.Combat.EnemyAttacks;
-using SG.Claymore.Entities;
-using SG.Claymore.Armory;
+using Il2CppSG.Claymore.Movement.Dash;
+using Il2CppSG.Claymore.Combat.Blocking;
+using Il2CppSG.Claymore.Interaction;
+using Il2CppSG.Claymore.Armaments;
+using Il2CppSG.Claymore.Armaments.Abilities;
+using Il2CppSG.Claymore.Player;
+using Il2CppSG.Claymore.Combat.EnemyAttacks;
+using Il2CppSG.Claymore.Entities;
+using Il2CppSG.Claymore.Armory;
 
 namespace TactsuitUntilYouFall
 {
@@ -38,7 +38,7 @@ namespace TactsuitUntilYouFall
         }
 
 
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
             //Preferences.Setup();
 
@@ -47,9 +47,9 @@ namespace TactsuitUntilYouFall
 
             //Create hooks here:
 
-            var harmony = new Harmony.HarmonyInstance("TactsuitUntilYouFallHarmony");
+            //var harmony = new Harmony.HarmonyInstance("TactsuitUntilYouFallHarmony");
             //HarmonyInstance. Create("TactsuitUntilYouFallHarmony").PatchAll();
-            harmony.PatchAll();
+            //harmony.PatchAll();
 
 
             tactsuitVr.LOG("Events created.");
@@ -105,7 +105,7 @@ namespace TactsuitUntilYouFall
         }
 
 
-        [HarmonyPatch(typeof(MeleeWeapon), "GetForceRating", new Type[] { typeof(SG.Claymore.HitSystem.HitData.HitQualityType) })]
+        [HarmonyPatch(typeof(MeleeWeapon), "GetForceRating", new Type[] { typeof(Il2CppSG.Claymore.HitSystem.HitData.HitQualityType) })]
         public class HitForce
         {
             [HarmonyPostfix]
