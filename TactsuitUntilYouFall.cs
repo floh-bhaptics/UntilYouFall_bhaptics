@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using MelonLoader;
 using HarmonyLib;
-using System.Threading;
 
 using Il2CppSG.Claymore.Movement.Dash;
 using Il2CppSG.Claymore.Combat.Blocking;
@@ -13,11 +13,14 @@ using Il2CppSG.Claymore.Combat.EnemyAttacks;
 using Il2CppSG.Claymore.Entities;
 using Il2CppSG.Claymore.Armory;
 
+[assembly: MelonInfo(typeof(TactsuitUntilYouFall.TactsuitUntilYouFall), "UntilYouFall_bhaptics", "2.0.0", "Florian Fahrenberger")]
+[assembly: MelonGame("Schell Games", "UntilYouFall")]
+
 namespace TactsuitUntilYouFall
 {
     public class TactsuitUntilYouFall : MelonMod
     {
-        public static TactsuitVR tactsuitVr;
+        public static TactsuitVR tactsuitVr = null!;
         private static String ActiveHand = "PlayerHandRight";
         private static ManualResetEvent mrse = new ManualResetEvent(false);
         private static bool BulwarkActive = false;
