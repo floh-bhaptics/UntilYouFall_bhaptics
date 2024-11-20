@@ -329,7 +329,6 @@ namespace TactsuitUntilYouFall
             [HarmonyPostfix]
             public static void Postfix(GroundAttackPlayable __instance)
             {
-                tactsuitVr.LOG("GroundAttackPlayable.Raise");
                 TactsuitUntilYouFall.tactsuitVr.FileFeedback("GroundAttack");
             }
         }
